@@ -1,7 +1,7 @@
 from pathlib import Path
 
 # Directories
-EFS_DIR = Path("/efs/shared_storage/goku")
+EFS_DIR = Path("/Users/lipeng/workspaces/github.com/ray-project/llm-applications/efs")
 ROOT_DIR = Path(__file__).parent.parent.absolute()
 
 # Mappings

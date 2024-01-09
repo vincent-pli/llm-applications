@@ -12,6 +12,7 @@ from rag.config import EFS_DIR
 from rag.data import extract_sections
 from rag.embed import EmbedChunks
 from rag.utils import execute_bash
+from rag.chunk import chunk_section
 
 
 class StoreResults:
@@ -33,21 +34,22 @@ class StoreResults:
         return {}
 
 
-def chunk_section(section, chunk_size, chunk_overlap):
-    text_splitter = RecursiveCharacterTextSplitter(
-        separators=["\n\n", "\n", " ", ""],
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap,
-        length_function=len,
-    )
-    chunks = text_splitter.create_documents(
-        texts=[section["text"]], metadatas=[{"source": section["source"]}]
-    )
-    return [{"text": chunk.page_content, "source": chunk.metadata["source"]} for chunk in chunks]
+# def chunk_section(section, chunk_size, chunk_overlap):
+#     text_splitter = RecursiveCharacterTextSplitter(
+#         separators=["\n\n", "\n", " ", ""],
+#         chunk_size=chunk_size,
+#         chunk_overlap=chunk_overlap,
+#         length_function=len,
+#     )
+#     chunks = text_splitter.create_documents(
+#         texts=[section["text"]], metadatas=[{"source": section["source"]}]
+#     )
+#     return [{"text": chunk.page_content, "source": chunk.metadata["source"]} for chunk in chunks]
 
 
 def build_or_load_index(
-    embedding_model_name, embedding_dim, chunk_size, chunk_overlap, docs_dir=None, sql_dump_fp=None
+    embedding_model_name, embedding_dim, chunk_size, chunk_overlap, docs_dir=None, 
+    sql_dump_fp=None
 ):
     # Drop current Vector DB and prepare for new one
     execute_bash(f'psql "{os.environ["DB_CONNECTION_STRING"]}" -c "DROP TABLE document;"')

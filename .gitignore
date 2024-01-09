@@ -109,4 +109,5 @@ airflow/airflow.db
 docs.ray.io/
 
 # book and other source folders
+.llm-application
 data/

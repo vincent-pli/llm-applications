@@ -3,6 +3,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup, NavigableString
 
 from rag.config import EFS_DIR
+from ._base import DataIngest, DocPath, Item, formatit
 
 
 def extract_text_from_section(section):
@@ -51,3 +52,33 @@ def fetch_text(uri):
     else:
         text = soup.get_text()
     return text
+
+class LoadHtmlandExtractSection(DataIngest):
+    def __init__(
+        self,
+        docs_dir: str,
+    ):
+        super().__init__(
+            docs_dir=docs_dir,
+        )
+
+    @formatit
+    def extract_doc(self, doc_path: DocPath) -> list[Item]:
+        section_list: list[Item] = []
+        
+
+        with open(doc_path.path, "r", encoding="utf-8") as html_file:
+            soup = BeautifulSoup(html_file, "html.parser")
+        sections = soup.find_all("section")
+        
+        for section in sections:
+            section_id = section.get("id")
+            section_text = extract_text_from_section(section)
+            if section_id:
+                uri = path_to_uri(path=doc_path.path)
+                # section_list.append({"source": f"{uri}#{section_id}", "text": section_text})
+                item = Item(source=f"{uri}#{section_id}", text=section_text)
+                section_list.append(item)
+        
+
+        return section_list
